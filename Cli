@@ -1,0 +1,179 @@
+"""
+PDF Research Assistant — Command Line Interface
+================================================
+Author : Ramya Sree Nagarajan
+
+Usage:
+  # Interactive Q&A session
+  python src/cli.py --pdf path/to/document.pdf
+
+  # Single question
+  python src/cli.py --pdf path/to/document.pdf --ask "What is the main finding?"
+
+  # Run demo with a sample text
+  python src/cli.py --demo
+"""
+
+import argparse
+import os
+import sys
+import textwrap
+import time
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+from src.rag_engine import RAGPipeline
+
+
+BANNER = """
+╔══════════════════════════════════════════════════════╗
+║        📄  PDF Research Assistant  (RAG)            ║
+║   Ask questions about any PDF — answers from doc    ║
+║   Built by Ramya Sree Nagarajan · MSc AI · RHUL     ║
+╚══════════════════════════════════════════════════════╝
+"""
+
+DIVIDER = "─" * 58
+
+
+def print_answer(result: dict):
+    print(f"\n{DIVIDER}")
+    print(f"  ❓ {result['query']}")
+    print(DIVIDER)
+    # Wrap answer text for clean terminal display
+    answer_lines = textwrap.fill(result["answer"], width=56)
+    for line in answer_lines.split("\n"):
+        print(f"  {line}")
+    print(f"\n  📌 Top sources (relevance scores):")
+    for i, (score, meta) in enumerate(
+            zip(result["scores"], result["metadata"]), 1):
+        print(f"     {i}. chunk #{meta['chunk_id']}  "
+              f"~page {meta['approx_page']}  "
+              f"score={score:.3f}")
+    print(DIVIDER)
+
+
+def run_demo():
+    """Demo mode — creates a tiny in-memory document and asks questions."""
+    print(BANNER)
+    print("🎬  Running DEMO mode (no PDF needed)\n")
+
+    # Create a small sample text file to simulate a PDF
+    sample_text = """
+    Artificial Intelligence in Healthcare
+    ======================================
+
+    Machine learning algorithms have shown remarkable performance in medical
+    image analysis. Convolutional neural networks achieve over 95 percent
+    accuracy in detecting diabetic retinopathy from retinal scans.
+
+    Deep learning models trained on chest X-rays can identify pneumonia,
+    COVID-19, and tuberculosis with sensitivity rates exceeding 90 percent.
+
+    Natural Language Processing techniques are used to extract clinical
+    information from unstructured medical records, reducing documentation
+    time by up to 40 percent in hospital settings.
+
+    Reinforcement learning is being applied to optimise treatment plans
+    for cancer patients, with early results showing improved outcomes
+    in personalised chemotherapy dosing.
+
+    Federated learning enables hospitals to collaboratively train models
+    without sharing patient data, addressing key privacy concerns under
+    GDPR and HIPAA regulations.
+
+    The global AI in healthcare market is projected to reach 187 billion
+    dollars by 2030, growing at a CAGR of 37 percent from 2023.
+    """
+
+    # Write temp file and ingest
+    os.makedirs("data", exist_ok=True)
+    demo_path = "data/demo_document.txt"
+    with open(demo_path, "w") as f:
+        f.write(sample_text)
+
+    # Use a simple text-based ingest for demo
+    from src.rag_engine import VectorStore, chunk_text, generate_answer_local
+
+    chunks = chunk_text(sample_text, chunk_size=80, overlap=15)
+    store  = VectorStore()
+    meta   = [{"chunk_id": i, "approx_page": 1, "source": "demo"}
+               for i in range(len(chunks))]
+    store.build(chunks, meta)
+
+    demo_questions = [
+        "What accuracy do CNNs achieve in detecting diabetic retinopathy?",
+        "How does federated learning help with privacy?",
+        "What is the projected market size for AI in healthcare by 2030?",
+        "How is NLP used in hospitals?",
+    ]
+
+    for q in demo_questions:
+        results = store.retrieve(q, top_k=3)
+        context = [r[0] for r in results]
+        scores  = [r[1] for r in results]
+        mdata   = [r[2] for r in results]
+        answer  = generate_answer_local(q, context)
+        print_answer({
+            "query": q, "answer": answer,
+            "scores": scores, "metadata": mdata
+        })
+        time.sleep(0.3)
+
+    print("\n✅  Demo complete! To use with your own PDF:")
+    print("   python src/cli.py --pdf your_document.pdf\n")
+
+
+def interactive_session(pipeline: RAGPipeline):
+    """Run an interactive Q&A loop."""
+    print("\n💬  Interactive mode — type your questions (or 'quit' to exit)\n")
+    while True:
+        try:
+            query = input("  You: ").strip()
+        except (KeyboardInterrupt, EOFError):
+            print("\n\n👋  Goodbye!\n")
+            break
+        if not query:
+            continue
+        if query.lower() in {"quit", "exit", "q", "bye"}:
+            print("\n👋  Goodbye!\n")
+            break
+        result = pipeline.ask(query)
+        print_answer(result)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="PDF Research Assistant — RAG-powered Q&A")
+    parser.add_argument("--pdf",  type=str, help="Path to PDF file")
+    parser.add_argument("--ask",  type=str, help="Single question (non-interactive)")
+    parser.add_argument("--demo", action="store_true", help="Run demo without PDF")
+    parser.add_argument("--top-k", type=int, default=5,
+                        help="Number of chunks to retrieve (default: 5)")
+    args = parser.parse_args()
+
+    if args.demo:
+        run_demo()
+        return
+
+    if not args.pdf:
+        parser.print_help()
+        print("\n💡  Tip: run with --demo to try without a PDF\n")
+        return
+
+    if not os.path.exists(args.pdf):
+        print(f"❌  File not found: {args.pdf}")
+        sys.exit(1)
+
+    print(BANNER)
+    pipeline = RAGPipeline()
+    pipeline.ingest(args.pdf)
+
+    if args.ask:
+        result = pipeline.ask(args.ask, top_k=args.top_k)
+        print_answer(result)
+    else:
+        interactive_session(pipeline)
+
+
+if __name__ == "__main__":
+    main()
