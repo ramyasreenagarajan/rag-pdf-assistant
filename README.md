@@ -16,25 +16,25 @@
 
 ---
 
-## 🚀 What is this?
+##  What is this?
 
 A **Retrieval-Augmented Generation (RAG)** pipeline that lets you have a conversation with any PDF document. No hallucinations — every answer is grounded strictly in your uploaded content.
 
 > **Why RAG?** RAG is the #1 trending AI architecture in 2026. It combines the power of semantic search with language generation — used by enterprises worldwide for document intelligence, research assistants, and knowledge bases.
 
-### ✨ Features
+### Features
 
-- 📄 **Any PDF** — research papers, reports, textbooks, contracts
-- 🔍 **Semantic search** using TF-IDF + cosine similarity
-- 💬 **Interactive chat UI** built with Streamlit
-- 🖥️ **CLI mode** for terminal power users
-- 🔒 **100% local** — no API key, no data sent to cloud
-- 📎 **Source citations** — see exactly which chunk answered your question
-- ⚡ **Fast indexing** — 200-page PDF indexed in under 3 seconds
+-  **Any PDF** — research papers, reports, textbooks, contracts
+-  **Semantic search** using TF-IDF + cosine similarity
+-  **Interactive chat UI** built with Streamlit
+-  **CLI mode** for terminal power users
+-  **100% local** — no API key, no data sent to cloud
+-  **Source citations** — see exactly which chunk answered your question
+-  **Fast indexing** — 200-page PDF indexed in under 3 seconds
 
 ---
 
-## 📸 Demo
+##  Demo
 
 <table>
 <tr>
@@ -44,14 +44,14 @@ A **Retrieval-Augmented Generation (RAG)** pipeline that lets you have a convers
 ```bash
 $ python src/cli.py --demo
 
-❓ What accuracy do CNNs achieve?
+ What accuracy do CNNs achieve?
 ──────────────────────────────────────────────────────
   Machine learning algorithms achieve over 95 percent
   accuracy in detecting diabetic retinopathy.
   Deep learning models identify pneumonia with 90%+
   sensitivity from chest X-rays.
 
-  📌 Top sources:
+   Top sources:
      1. chunk #3  ~page 1  score=0.421
      2. chunk #1  ~page 1  score=0.318
 ──────────────────────────────────────────────────────
@@ -63,7 +63,7 @@ $ python src/cli.py --demo
 
 ---
 
-## ⚙️ How it Works
+## How it Works
 
 ```
 ┌─────────────┐    ┌──────────────┐    ┌─────────────────┐
@@ -88,7 +88,7 @@ $ python src/cli.py --demo
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 rag-pdf-assistant/
@@ -120,7 +120,7 @@ pip install -r requirements.txt
 
 ---
 
-## 🖥️ Usage
+## Usage
 
 ### Web App (Streamlit)
 ```bash
@@ -144,7 +144,7 @@ python src/cli.py --pdf your_document.pdf --ask "What are the main findings?"
 
 ---
 
-## 🔧 Extend with an LLM
+## Extend with an LLM
 
 The `generate_answer_local()` function in `src/rag_engine.py` is a drop-in swap point. Replace it with any LLM:
 
@@ -169,7 +169,7 @@ return msg.content[0].text
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [ ] Swap TF-IDF for sentence-transformers (semantic embeddings)
 - [ ] Add multi-PDF support with source attribution
@@ -179,7 +179,7 @@ return msg.content[0].text
 
 ---
 
-## 👩‍💻 Author
+## Author
 
 **Ramya Sree Nagarajan**
 MSc Artificial Intelligence · Royal Holloway, University of London
@@ -191,7 +191,7 @@ IEEE Published Researcher · Python · ML · Cybersecurity
 
 ---
 
-## 📄 License
+## License
 
 MIT License — see [LICENSE](LICENSE) for details.
 
