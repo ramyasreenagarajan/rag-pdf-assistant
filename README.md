@@ -1,4 +1,4 @@
-<img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=160&section=header&text=PDF%20Research%20Assistant&fontSize=36&fontColor=fff&animation=twinkling&fontAlignY=38&desc=RAG-Powered%20Document%20Q%26A%20%7C%20Ask%20Anything%20About%20Any%20PDF&descAlignY=62&descSize=15" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&amp;color=gradient&amp;customColorList=6,11,20&amp;height=160&amp;section=header&amp;text=Context%20Compressor&amp;fontSize=38&amp;fontColor=fff&amp;animation=twinkling&amp;fontAlignY=38&amp;desc=Shrink%20Logs%2C%20Docs%20%26%20RAG%20Chunks%20Before%20They%20Hit%20Your%20LLM&amp;descAlignY=62&amp;descSize=15" width="100%"/>
 
 <div align="center">
 
